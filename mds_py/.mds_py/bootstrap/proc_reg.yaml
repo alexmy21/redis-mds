@@ -1,0 +1,28 @@
+{
+  'name': {'type': 'string', 'default': 'proc_reg'},
+  'namespace': {'type': 'string', 'default': 'bootstrap'},
+  'prefix': {'type': 'string', 'default': 'prog_reg'},
+  'label': {'type': 'string', 'default': 'PROC_REG'},
+  'kind': {'type': 'string', 'default': 'node'},
+
+  'keys': {'required': True, 'type': 'list', 'default': ['label', 'name', 'groupId', 'artifactId', 'version', 'packaging','language', 'repo', 'package']},
+
+  'props': {
+    'required': True,
+    'type': 'dict',
+    'schema': {
+      '__id': {'type': 'string', 'default': 'str'},
+      'label': {'type': 'string', 'default': 'str'},
+      'name': {'type': 'string', 'default': 'str'},
+      'groupId': {'type': 'string', 'default': 'str'},
+      'artifactId': {'type': 'string', 'default': 'str'},
+      'version': {'type': 'string', 'default': 'str'},
+      'packaging': {'type': 'string', 'default': 'str'},
+      'language': {'type': 'string', 'default': 'str'},
+      'repo': {'type': 'string', 'default': 'str'},
+      'package': {'type': 'string', 'default': 'str'},
+      'yaml_schema': {'type': 'string', 'default': 'str'},
+      'doc': {'type': 'string', 'default': 'str'},
+    }
+  }
+}
