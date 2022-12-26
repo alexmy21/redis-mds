@@ -2,8 +2,7 @@
 import csv
 from . vocabulary import Vocabulary as voc
 
-
-import imp
+import importlib
 import os
 
 import os
@@ -38,8 +37,24 @@ def importFromURI(uri, absl):
 
     return mod
 
+def loadClassFromFile(filepath: str, expected_class: str = None):
+    class_inst = None
+    #  expected_class = 'MyClass'
+
+    mod_name, file_ext = os.path.splitext(os.path.split(filepath)[-1])
+
+    if file_ext.lower() == '.py':
+        py_mod = imp.load_source(mod_name, filepath)
+
+    elif file_ext.lower() == '.pyc':
+        py_mod = imp.load_compiled(mod_name, filepath)
+
+    if hasattr(py_mod, expected_class):
+        class_inst = getattr(py_mod, expected_class)()
+
+    return class_inst
+
 def fileList(dir: str) -> list|None:
-    path = dir
     return os.listdir(dir)
 
 def getSchemaFromFile(file_name):     

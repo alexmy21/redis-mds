@@ -14,10 +14,14 @@ class Vocabulary:
     CONFIG_FILE = 'config'
     TRANSACTION = 'transaction'
     COMMIT = 'commit'
+    COMMIT_TAIL = 'commit_tail'
+    PROC_REG = 'proc_reg'
 
     # Schema top properties
     ID = '__id'
+    PARENT_ID = 'parent_id'
     NAME = 'name'
+    URL = 'url'
     NAMESPACE = 'namespace'
     PREFIX = 'prefix'
     LABEL = 'label'
@@ -27,6 +31,9 @@ class Vocabulary:
     SOURCE = 'source'
     DOC = 'doc'
     SIZE = 'size'
+    PACKAGE = 'package'
+    SCHEMA = 'schema'
+    SCHEMA_DIR = 'schema_dir'
 
     # TRANSACTION
     ITEM_ID = 'item_id'
@@ -50,6 +57,7 @@ class Vocabulary:
     REDIS_PORT = 'port'
 
     # Data sources
+    DIR = 'dir'
     FILE = 'file'
     FILE_TYPE = 'file_type'
     DB = 'db'

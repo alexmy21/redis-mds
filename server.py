@@ -1,16 +1,16 @@
 import os
 from starlette.applications import Starlette
-from starlette.responses import PlainTextResponse, JSONResponse
+from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 from mds_py import utils as utl
 from mds_py.vocabulary import Vocabulary as voc
 
-
 async def post_method(request):
     data: dict = await request.json() 
 
-    uri = os.path.normpath(os.path.join(os.path.dirname(__file__), data.get(voc.PROCESSOR_ID)))
+    uri = os.path.normpath(os.path.join(os.path.dirname(__file__), data.get(voc.PACKAGE), data.get(voc.NAME)))
+    
     processor = utl.importFromURI(uri, True)
     processor.run(data.get(voc.PROPS))
 

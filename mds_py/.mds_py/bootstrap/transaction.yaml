@@ -13,9 +13,10 @@
     'schema': {
       '__id': {'type': 'string','default': 'str'},
       'item_id': {'type': 'string', 'required': True, 'default': 'str'},
+      'namespace': {'type': 'string', 'required': True, 'default': 'str'},
+      'item_schema': {'type': 'string', 'required': True, 'default': 'str'},
       'item_prefix': {'type': 'string', 'required': True, 'default': 'str'},
-      '_item_prefix': {'type': 'string', 'required': True, 'default': 'str'},
-      '_item_type': {'type': 'string', 'required': True, 'default': 'str'},
+      'item_type': {'type': 'string', 'required': True, 'default': 'str'},
       'processor_id': {'type': 'string', 'required': True, 'default': 'str'},
       'processor_uuid': {'type': 'string', 'required': True, 'default': ''},
       'processor_prefix': {'type': 'string', 'default': 'str'},

@@ -62,7 +62,6 @@ class Client:
         # rs: redis.Redis, mds_home:str, dir: str, fileList: list, register: bool
         cmd.createIndices(rs, self.mds_home, self.boot, fileList)
 
-
     # Following is a list  wrappers for commands from Commands module
     #====================================================================
     def schema_file_name(self, schema_dir: str, schema_name: str) -> str|None:
@@ -75,10 +74,10 @@ class Client:
         rs = utl.getRedis(self.config_props)
         return rs.ft(idx_name).info()
 
-    def create_index(self, schema_dir: str, idx_name: str) -> str|None :
+    def create_index(self, schema_dir: str, idx_name: str, proc: bool = False) -> str|None :
         rs = utl.getRedis(self.config_props)
         path = os.path.join(self.mds_home, schema_dir, utl.idxFileWithExt(idx_name))
-        ret_str = cmd.createIndex(rs, idx_name, self.mds_home, path)
+        ret_str = cmd.createIndex(rs, idx_name, self.mds_home, path, proc)
 
         return ret_str
     
@@ -105,12 +104,32 @@ class Client:
     def tx_status(self, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str) -> str|None:
         rs = utl.getRedis(self.config_props)
         return cmd.txStatus(rs, proc_id, proc_pref, item_id, status)
+
+    def dir_meta(self, proc_id: str, proc_pref: str, parent_id: str, dir: str) -> str|None:
+        rs = utl.getRedis(self.config_props)
         
-    def file_meta(self, proc_id: str, proc_pref: str, file: str) -> str|None:
+        map = {
+            voc.PARENT_ID: f'{parent_id}',
+            voc.URL: f'{dir}',
+            voc.LABEL: voc.DIR.upper(),
+            voc.DOC: ''
+        }
+        _map: dict = Client.update_record(self, schema_dir=voc.SCHEMAS, schema_name=voc.DIR, map=map) 
+        if _map == None:
+            return None   
+        else:
+            st_map: dict = cmd.txUpdate(rs, proc_id, proc_pref, _map[voc.ID], _map[voc.ITEM_PREFIX], voc.DIR, voc.WAITING)
+            if st_map == None:
+                return None
+            else:
+                return _map[voc.ID]
+
+    def file_meta(self, proc_id: str, proc_pref: str, parent_id: str, file: str) -> str|None:
         rs = utl.getRedis(self.config_props)
         stats = os.stat(file)
         map = {
-            voc.NAME: f'{file}',
+            voc.PARENT_ID: f'{parent_id}',
+            voc.URL: f'{file}',
             voc.LABEL: voc.FILE.upper(),
             voc.FILE_TYPE: pathlib.Path(file).suffix,
             voc.SIZE: stats.st_size,
@@ -124,7 +143,7 @@ class Client:
             if st_map == None:
                 return None
             else:
-                return voc.OK
+                return _map[voc.ID]
 
     
     print('=================== Client new instance =============================')

@@ -1,10 +1,10 @@
 {
-  'name': {'type': 'string', 'default': 'file'},
+  'name': {'type': 'string', 'default': 'dir'},
   'namespace': {'type': 'string', 'default': 'schemas'},
-  'prefix': {'type': 'string', 'default': 'file'},
-  'label': {'type': 'string', 'default': 'FILE'},
+  'prefix': {'type': 'string', 'default': 'dir'},
+  'label': {'type': 'string', 'default': 'DIR'},
   'kind': {'type': 'string', 'default': 'node'},
-  'keys': {'type': 'list', 'required': True, 'default': ['label', 'url', 'file_type']},  
+  'keys': {'type': 'list', 'required': True, 'default': ['label', 'url', 'parent_id']},  
   'props': {
     'required': True,
     'type': 'dict',
@@ -13,9 +13,7 @@
       'label': {'type': 'string', 'required': True, 'default': 'str'},
       'parent_id': {'type': 'string', 'required': True, 'default': 'str'},
       'url': {'type': 'string', 'required': True, 'default': 'str'},
-      'item_prefix': {'type': 'string', 'required': True, 'default': 'file'},
-      'file_type': {'type': 'string', 'required': True, 'default': 'str'},
-      'size': {'type': 'integer', 'required': True, 'default': 0},
+      'item_prefix': {'type': 'string', 'required': True, 'default': 'dir'},
       'doc': {'type': 'string', 'default': 'str'}
     },
   }
