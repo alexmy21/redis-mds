@@ -54,7 +54,7 @@ class Commands:
             voc.SOURCE: str(sch)
         }
         # print('IDX_REG record: {}'.format(idx_reg_dict[voc.LABEL]))
-        return Commands.updateRecord(rs, voc.IDX_REG, voc.IDX_REG, file, idx_reg_dict)
+        return Commands.updateRecord(rs, voc.IDX_REG, file, idx_reg_dict)
 
     @staticmethod
     def registerProcessor(rs: redis.Redis, mds_home: str, n_doc:dict, sch) -> dict|None:
@@ -69,10 +69,10 @@ class Commands:
             voc.SOURCE: str(sch)
         }
         # print('IDX_REG record: {}'.format(idx_reg_dict[voc.LABEL]))
-        return Commands.updateRecord(rs, voc.PROC_REG, voc.PROC_REG, file, proc_reg_dict)
+        return Commands.updateRecord(rs, voc.PROC_REG, file, proc_reg_dict)
 
     @staticmethod
-    def updateRecord(rs:redis.Redis, pref: str, idx_name: str, schema_path: str, map:dict) -> dict|None:
+    def updateRecord(rs:redis.Redis, pref: str, schema_path: str, map:dict) -> dict|None:
         _pref = utl.prefix(pref)        
         sch = utl.getSchemaFromFile(schema_path)     
         v = Validator()        
@@ -87,13 +87,14 @@ class Commands:
             _map[voc.ID] = id
             rs.hset(_pref + id, mapping=_map)
             return _map
-        return None
+        else:
+            return None
 
     @staticmethod
     def getRecord(rs:redis.Redis, pref: str, item_id: str,) -> dict|None:
         return rs.hgetall(pref + item_id)
 
-    def search(rs: redis.Redis, index: str, query: str|Query, query_params: dict|None = None) -> str|None:
+    def search(rs: redis.Redis, index: str, query: str|Query, query_params: dict|None = None) -> dict|None:
         # _query: Query = 
         if query_params == None:
             result = rs.ft(index).search(query)
@@ -119,13 +120,12 @@ class Commands:
             _map[voc.ITEM_ID] = item_id
             _map[voc.ITEM_PREFIX] = item_prefix
             _map[voc.DOC] = ' '
-            rs.hset(tx_pref + item_id, mapping=_map)
+            return rs.hset(tx_pref + item_id, mapping=_map)
         else:
             map.update(_map)
-            rs.hset(tx_pref + item_id, mapping=map)
-        return voc.OK
-
-    def txStatus(rs: redis.Redis, proc_id: str, proc_pref: str, item_id: str, status: str) -> str|None:
+            return rs.hset(tx_pref + item_id, mapping=map)
+        
+    def txStatus(rs: redis.Redis, proc_id: str, proc_pref: str, item_id: str, status: str) -> dict|None:
         tx_pref = utl.prefix(voc.TRANSACTION)
         map:dict = rs.hgetall(tx_pref + item_id)        
         if map == None:
@@ -134,8 +134,7 @@ class Commands:
             map[voc.PROCESSOR_ID] = proc_id
             map[voc.PROCESSOR_PREFIX] = proc_pref
             map[voc.STATUS] = status
-            rs.hset(tx_pref + item_id, mapping=map)
-        return voc.OK
+            return rs.hset(tx_pref + item_id, mapping=map)
 
     def set(rs: redis.Redis, key: str, value: str) -> str|None:
         return rs.set(key, value)

@@ -86,7 +86,8 @@ class Client:
         rs = utl.getRedis(self.config_props)
         path = os.path.join(self.mds_home, schema_dir, utl.idxFileWithExt(schema_name))
         # rs:redis.Redis, pref: str, idx_name: str, schema_path: str, map:dict
-        return cmd.updateRecord(rs, schema_name, schema_name, path, map)
+        # rs:redis.Redis, pref: str, schema_path: str, map:dict
+        return cmd.updateRecord(rs, schema_name, path, map)
 
     def search(self, idx: str, query: str|Query, query_params: dict|None = None):
         rs = utl.getRedis(self.config_props)            
@@ -105,9 +106,15 @@ class Client:
         rs = utl.getRedis(self.config_props)
         return cmd.txStatus(rs, proc_id, proc_pref, item_id, status)
 
-    def dir_meta(self, proc_id: str, proc_pref: str, parent_id: str, dir: str) -> str|None:
-        rs = utl.getRedis(self.config_props)
-        
+    '''
+        dir_meta and file_meta are source processors. Normally, processor should not take care about managing "transaction" index,
+        this is Controller responsibility. Source processors are exception of this rule. They populate "transaction" index to be used 
+        by other processors.
+        redis-mds should provide source processors for most of data sources like files, data bases (relational and non relational), 
+        documents , images, video, audio and other streaming data sources.
+    '''
+    def dir_meta(self, proc_id: str, proc_pref: str, parent_id: str, dir: str) -> dict|None:
+        rs = utl.getRedis(self.config_props)        
         map = {
             voc.PARENT_ID: f'{parent_id}',
             voc.URL: f'{dir}',
@@ -122,13 +129,13 @@ class Client:
             if st_map == None:
                 return None
             else:
-                return _map[voc.ID]
+                return _map
 
-    def file_meta(self, proc_id: str, proc_pref: str, parent_id: str, file: str) -> str|None:
+    def file_meta(self, proc_id: str, proc_pref: str, dir: dict, file: str) -> dict|None:
         rs = utl.getRedis(self.config_props)
         stats = os.stat(file)
         map = {
-            voc.PARENT_ID: f'{parent_id}',
+            voc.PARENT_ID: f'{dir.get(voc.ID)}',
             voc.URL: f'{file}',
             voc.LABEL: voc.FILE.upper(),
             voc.FILE_TYPE: pathlib.Path(file).suffix,
@@ -143,7 +150,7 @@ class Client:
             if st_map == None:
                 return None
             else:
-                return _map[voc.ID]
+                return _map
 
     
     print('=================== Client new instance =============================')

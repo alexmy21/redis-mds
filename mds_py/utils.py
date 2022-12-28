@@ -1,8 +1,7 @@
-
 import csv
 from . vocabulary import Vocabulary as voc
 
-import importlib
+import imp
 import os
 
 import os
@@ -13,23 +12,37 @@ import hashlib
 from redis.commands.search.field import TextField, NumericField, TagField
 from redis.commands.search.query import NumericFilter, Query
 
+from mds_py.commands import Commands as cmd
+
 
 doc_0 = {'props': {}}
+
+# def updateMeta(rs:redis.Redis, pref: str, schema_path: str, map:dict) -> str|None:
+#     _map: dict = cmd.updateRecord(rs, pref, schema_path, map=map) 
+#     if _map == None:
+#         return None   
+#     else:
+#         st_map: dict = cmd.txUpdate(rs, proc_id, proc_pref, _map[voc.ID], _map[voc.ITEM_PREFIX], voc.DIR, voc.WAITING)
+#         if st_map == None:
+#             return None
+#         else:
+#             return _map[voc.ID]
 
 def importFromURI(uri, absl):
     mod = None
     if not absl:
         print(os.path.dirname(__file__))
         uri = os.path.normpath(os.path.join(os.path.dirname(__file__), uri))
+
     path, fname = os.path.split(uri)
     mname, ext = os.path.splitext(fname)
 
-    if os.path.exists(os.path.join(path,mname)+'.pyc'):
+    if os.path.exists(os.path.join(path, mname) + '.pyc'):
         try:
             return imp.load_compiled(mname, uri)
         except:
             pass
-    if os.path.exists(os.path.join(path,mname)+'.py'):
+    if os.path.exists(os.path.join(path, mname) + '.py'):
         try:
             return imp.load_source(mname, uri)
         except:

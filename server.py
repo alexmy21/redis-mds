@@ -5,16 +5,19 @@ from starlette.routing import Route
 
 from mds_py import utils as utl
 from mds_py.vocabulary import Vocabulary as voc
+from mds_py.controller import Controller as controller
 
 async def post_method(request):
     data: dict = await request.json() 
 
-    uri = os.path.normpath(os.path.join(os.path.dirname(__file__), data.get(voc.PACKAGE), data.get(voc.NAME)))
-    
-    processor = utl.importFromURI(uri, True)
-    processor.run(data.get(voc.PROPS))
+    match data.get(voc.LABEL):
+        case 'SOURCE':
+            path = os.path.dirname(__file__)
+            _data: dict = controller(path, data).source()
+        case _:
+            print('default case')
 
-    return JSONResponse(data.get(voc.PROPS))
+    return JSONResponse(_data)
 
 def startup():
     print('Starlette started')
